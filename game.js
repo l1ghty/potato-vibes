@@ -299,15 +299,23 @@ class Game {
             this.penguin.gliding
         );
 
-        // Render yeti
+        // Check if we should show the swing pose
+        const useSwingPose = this.state === 'SWINGING' || this.state === 'FLYING' || this.state === 'LANDED';
+
+        // Render yeti (pass useSwingPose)
         this.sprites.drawYeti(
             this.yeti.x,
             this.yeti.y,
-            this.yeti.animationFrame
+            this.yeti.animationFrame,
+            useSwingPose
         );
 
-        // Render club
-        if (this.state === 'SWINGING' || this.state === 'FLYING') {
+        // Render vector club only if we are animating it AND the swing image is NOT fulfilling that role
+        // (i.e. if we are using the swing image, don't draw the separate club)
+        // We can check if the sprite class has the image loaded
+        const swingImageLoaded = this.sprites.elbroSwingImage && this.sprites.elbroSwingImage.complete && this.sprites.elbroSwingImage.naturalWidth > 0;
+
+        if ((this.state === 'SWINGING' || this.state === 'FLYING') && !swingImageLoaded) {
             this.sprites.drawGolfClub(
                 this.club.x,
                 this.club.y,

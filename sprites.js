@@ -6,68 +6,88 @@ class Sprites {
         this.potatoImage.src = 'assets/potato.png';
         this.glidingPotatoImage = new Image();
         this.glidingPotatoImage.src = 'assets/gliding-potato.png';
+        this.elbroImage = new Image();
+        this.elbroImage.src = 'assets/elbro.png';
+        this.elbroSwingImage = new Image();
+        this.elbroSwingImage.src = 'assets/elbro-swing.png';
     }
 
-    drawYeti(x, y, animationFrame) {
+    drawYeti(x, y, animationFrame, isSwinging = false) {
         const ctx = this.ctx;
 
-        // Yeti body
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.ellipse(x, y, 40, 50, 0, 0, Math.PI * 2);
-        ctx.fill();
+        const useElbro = this.elbroImage && this.elbroImage.complete && this.elbroImage.naturalWidth > 0;
+        const useSwing = this.elbroSwingImage && this.elbroSwingImage.complete && this.elbroSwingImage.naturalWidth > 0;
 
-        // Yeti head
-        ctx.beginPath();
-        ctx.arc(x, y - 60, 30, 0, Math.PI * 2);
-        ctx.fill();
+        if (isSwinging && useSwing) {
+            ctx.save();
+            // Draw Swing image
+            // Centered and scaled similar to Elbro
+            ctx.drawImage(this.elbroSwingImage, x - 60, y - 90, 120, 180);
+            ctx.restore();
+        } else if (useElbro) {
+            ctx.save();
+            // Draw Elbro (Idle)
+            ctx.drawImage(this.elbroImage, x - 60, y - 90, 120, 180);
+            ctx.restore();
+        } else {
+            // Yeti body vector fallback
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.ellipse(x, y, 40, 50, 0, 0, Math.PI * 2);
+            ctx.fill();
 
-        // Eyes
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.arc(x - 10, y - 65, 3, 0, Math.PI * 2);
-        ctx.arc(x + 10, y - 65, 3, 0, Math.PI * 2);
-        ctx.fill();
+            // Yeti head
+            ctx.beginPath();
+            ctx.arc(x, y - 60, 30, 0, Math.PI * 2);
+            ctx.fill();
 
-        // Mouth
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(x, y - 55, 8, 0, Math.PI);
-        ctx.stroke();
+            // Eyes
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(x - 10, y - 65, 3, 0, Math.PI * 2);
+            ctx.arc(x + 10, y - 65, 3, 0, Math.PI * 2);
+            ctx.fill();
 
-        // Arms
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 12;
-        ctx.lineCap = 'round';
+            // Mouth
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y - 55, 8, 0, Math.PI);
+            ctx.stroke();
 
-        // Left arm
-        ctx.beginPath();
-        ctx.moveTo(x - 35, y - 20);
-        ctx.lineTo(x - 50, y + 10);
-        ctx.stroke();
+            // Arms
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
 
-        // Right arm (holding club) - slight animation
-        const armBob = Math.sin(animationFrame * 0.05) * 2;
-        ctx.beginPath();
-        ctx.moveTo(x + 35, y - 20);
-        ctx.lineTo(x + 60, y - 10 + armBob);
-        ctx.stroke();
+            // Left arm
+            ctx.beginPath();
+            ctx.moveTo(x - 35, y - 20);
+            ctx.lineTo(x - 50, y + 10);
+            ctx.stroke();
 
-        // Legs
-        ctx.beginPath();
-        ctx.moveTo(x - 15, y + 50);
-        ctx.lineTo(x - 20, y + 80);
-        ctx.moveTo(x + 15, y + 50);
-        ctx.lineTo(x + 20, y + 80);
-        ctx.stroke();
+            // Right arm (holding club) - slight animation
+            const armBob = Math.sin(animationFrame * 0.05) * 2;
+            ctx.beginPath();
+            ctx.moveTo(x + 35, y - 20);
+            ctx.lineTo(x + 60, y - 10 + armBob);
+            ctx.stroke();
 
-        // Feet
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.ellipse(x - 20, y + 85, 12, 8, 0, 0, Math.PI * 2);
-        ctx.ellipse(x + 20, y + 85, 12, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
+            // Legs
+            ctx.beginPath();
+            ctx.moveTo(x - 15, y + 50);
+            ctx.lineTo(x - 20, y + 80);
+            ctx.moveTo(x + 15, y + 50);
+            ctx.lineTo(x + 20, y + 80);
+            ctx.stroke();
+
+            // Feet
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.ellipse(x - 20, y + 85, 12, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 20, y + 85, 12, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
 
     drawPenguin(x, y, rotation = 0, gliding = false) {
