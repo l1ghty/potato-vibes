@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yetisports 5 - Golf Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-overlay">
+            <div id="score-display">
+                <div class="score-item">
+                    <span class="label">Distance:</span>
+                    <span id="distance">0m</span>
+                </div>
+                <div class="score-item">
+                    <span class="label">Highscore:</span>
+                    <span id="highscore">0m</span>
+                </div>
+            </div>
+            <div id="game-message"></div>
+        </div>
+    </div>
+
+    <!-- Load game modules -->
+    <script src="parallax.js"></script>
+    <script src="sprites.js"></script>
+    <script src="powerbar.js"></script>
+    <script src="angleIndicator.js"></script>
+    <script src="physics.js"></script>
+    <script src="scoring.js"></script>
+    <script src="ui.js"></script>
+    <script src="input.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
