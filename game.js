@@ -207,7 +207,7 @@ class Game {
 
         // Gliding physics
         if (this.penguin.gliding && this.physics.isPenguinFlying()) {
-            this.physics.gravity = 350; // Increase gravity for less powerful glide
+            this.physics.gravity = 150; // Increase gravity for less powerful glide
             this.physics.airResistance = 0.997; // More air resistance for less powerful glide
             this.physics.penguinRotation = -0.6; // Angle to the right while gliding
             this.physics.penguinRotationVelocity = 0;

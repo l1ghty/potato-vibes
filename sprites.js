@@ -2,6 +2,10 @@
 class Sprites {
     constructor(ctx) {
         this.ctx = ctx;
+        this.potatoImage = new Image();
+        this.potatoImage.src = 'assets/potato.png';
+        this.glidingPotatoImage = new Image();
+        this.glidingPotatoImage.src = 'assets/gliding-potato.png';
     }
 
     drawYeti(x, y, animationFrame) {
@@ -69,73 +73,99 @@ class Sprites {
     drawPenguin(x, y, rotation = 0, gliding = false) {
         const ctx = this.ctx;
 
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(rotation);
+        const usePotato = this.potatoImage && this.potatoImage.complete && this.potatoImage.naturalWidth > 0;
+        const useGlidingPotato = this.glidingPotatoImage && this.glidingPotatoImage.complete && this.glidingPotatoImage.naturalWidth > 0;
 
-        // Penguin body (black)
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 15, 20, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Penguin belly (white)
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.ellipse(0, 5, 10, 15, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Head
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.arc(0, -18, 12, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Eyes
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.arc(-4, -20, 4, 0, Math.PI * 2);
-        ctx.arc(4, -20, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Pupils
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.arc(-4, -20, 2, 0, Math.PI * 2);
-        ctx.arc(4, -20, 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Beak
-        ctx.fillStyle = '#FFA500';
-        ctx.beginPath();
-        ctx.moveTo(0, -15);
-        ctx.lineTo(-5, -12);
-        ctx.lineTo(5, -12);
-        ctx.closePath();
-        ctx.fill();
-
-        // Wings
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        if (gliding) {
-            // Open wings: wide, flat
-            ctx.ellipse(-25, 0, 18, 8, -0.2, 0, Math.PI * 2);
-            ctx.ellipse(25, 0, 18, 8, 0.2, 0, Math.PI * 2);
-        } else {
-            // Normal wings
-            ctx.ellipse(-12, 0, 5, 12, -0.3, 0, Math.PI * 2);
-            ctx.ellipse(12, 0, 5, 12, 0.3, 0, Math.PI * 2);
+        let imgToUse = null;
+        if (gliding && useGlidingPotato) {
+            imgToUse = this.glidingPotatoImage;
+        } else if (usePotato) {
+            imgToUse = this.potatoImage;
         }
-        ctx.fill();
 
-        // Feet
-        ctx.fillStyle = '#FFA500';
-        ctx.beginPath();
-        ctx.ellipse(-6, 20, 5, 3, 0, 0, Math.PI * 2);
-        ctx.ellipse(6, 20, 5, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
+        if (imgToUse) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            if (imgToUse === this.glidingPotatoImage) {
+                // Draw gliding potato
+                // Match normal potato size approx 40x50
+                ctx.drawImage(imgToUse, -37, -37, 75, 75);
+            } else {
+                // Draw normal potato
+                // Dimensions approx 40x50 to match original penguin size roughly
+                ctx.drawImage(imgToUse, -20, -25, 40, 50);
+            }
+            ctx.restore();
+        } else {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
 
-        ctx.restore();
+            // Penguin body (black)
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 15, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Penguin belly (white)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.ellipse(0, 5, 10, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Head
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(0, -18, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(-4, -20, 4, 0, Math.PI * 2);
+            ctx.arc(4, -20, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupils
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(-4, -20, 2, 0, Math.PI * 2);
+            ctx.arc(4, -20, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Beak
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            ctx.moveTo(0, -15);
+            ctx.lineTo(-5, -12);
+            ctx.lineTo(5, -12);
+            ctx.closePath();
+            ctx.fill();
+
+            // Wings
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            if (gliding) {
+                // Open wings: wide, flat
+                ctx.ellipse(-25, 0, 18, 8, -0.2, 0, Math.PI * 2);
+                ctx.ellipse(25, 0, 18, 8, 0.2, 0, Math.PI * 2);
+            } else {
+                // Normal wings
+                ctx.ellipse(-12, 0, 5, 12, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(12, 0, 5, 12, 0.3, 0, Math.PI * 2);
+            }
+            ctx.fill();
+
+            // Feet
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            ctx.ellipse(-6, 20, 5, 3, 0, 0, Math.PI * 2);
+            ctx.ellipse(6, 20, 5, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
     }
 
     drawGolfClub(x, y, rotation) {
