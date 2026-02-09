@@ -43,6 +43,21 @@ class Game {
 
         this.groundY = this.canvas.height - 120;
 
+        // Audio
+        this.bgMusic = new Audio('assets/Syn Cole - Feel Good.mp3');
+        this.bgMusic.volume = 0.1;
+        this.musicStarted = false;
+
+
+        this.beepSound = new Audio('assets/beep.wav');
+        this.beepSound.volume = 0.1;
+
+        this.rechargeSound = new Audio('assets/recharge.wav');
+        this.rechargeSound.volume = 0.1;
+
+        this.tapSound = new Audio('assets/ball-tap.wav');
+        this.tapSound.volume = 0.1;
+
         // Timing
         this.lastTime = performance.now();
 
@@ -75,12 +90,25 @@ class Game {
             if (this.physics.isPenguinFlying()) {
                 this.penguin.gliding = false;
                 // Optionally restore rotation velocity, or let physics handle
+                this.tapOn = false;
             }
         });
 
         // Start game loop
         this.ui.showMessage('Click to Start!', true);
         this.gameLoop();
+    }
+
+    startMusic() {
+        if (!this.musicStarted) {
+            this.bgMusic.play().catch(e => console.log("Audio play failed:", e));
+            this.bgMusic.loop = false;
+            this.bgMusic.onended = () => {
+                this.bgMusic.currentTime = 0;
+                this.musicStarted = false;
+            };
+            this.musicStarted = true;
+        }
     }
 
     handleClick() {
@@ -91,6 +119,30 @@ class Game {
         } else if (this.state === 'ANGLE_SELECT') {
             this.lockAngle();
         }
+        this.beep();
+    }
+    beep() {
+        this.beepSound.play().catch(e => console.log("Audio play failed:", e));
+        this.beepSound.onended = () => {
+            this.beepSound.currentTime = 0;
+        };
+    }
+    recharge() {
+        this.rechargeSound.play().catch(e => console.log("Audio play failed:", e));
+        this.rechargeSound.onended = () => {
+            this.rechargeSound.currentTime = 0;
+        };
+    }
+    tap() {
+        if (this.tapOn) {
+            return;
+        }
+        this.tapOn = true;
+        this.tapSound.play().catch(e => console.log("Audio play failed:", e));
+        this.tapSound.loop = false;
+        this.tapSound.onended = () => {
+            this.tapSound.currentTime = 0;
+        };
     }
 
     handleMessageClick() {
@@ -107,6 +159,7 @@ class Game {
     }
 
     startPowerSelect() {
+        this.startMusic();
         this.state = 'POWER_SELECT';
         this.powerBar.start();
         this.ui.hideMessage();
@@ -211,6 +264,7 @@ class Game {
             this.physics.airResistance = 0.997; // More air resistance for less powerful glide
             this.physics.penguinRotation = -0.6; // Angle to the right while gliding
             this.physics.penguinRotationVelocity = 0;
+            this.tap();
         } else {
             this.physics.gravity = 600; // Normal gravity
             this.physics.airResistance = 0.995; // Normal air resistance
@@ -238,6 +292,9 @@ class Game {
                 penguinTop < padBottom &&
                 this.physics.isPenguinFlying()
             ) {
+                // Play sound only if we are hitting the pad
+                this.recharge();
+
                 // Apply upward and rightward force
                 this.physics.penguinVelocity.y = -1200;
                 this.physics.penguinVelocity.x += 800; // Add strong rightward force
