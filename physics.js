@@ -106,8 +106,11 @@ class Physics {
         this.penguinVelocity.y += this.gravity * deltaTime;
 
         // Apply air resistance
-        this.penguinVelocity.x *= this.airResistance;
-        this.penguinVelocity.y *= this.airResistance;
+        // Make it time-independent: (0.995 per frame @ 60fps)
+        // Formula: factor = pow(base_factor, deltaTime * targetFPS)
+        const airResistanceFactor = Math.pow(this.airResistance, deltaTime * 60);
+        this.penguinVelocity.x *= airResistanceFactor;
+        this.penguinVelocity.y *= airResistanceFactor;
 
         // Apply wind (optional)
         this.penguinVelocity.x += this.wind * deltaTime;
