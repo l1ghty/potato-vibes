@@ -66,17 +66,6 @@ class Sprites {
         ctx.fill();
     }
 
-    // In Sprites.js or similar file
-    drawPenguinX(x, y, rotation, gliding) {
-this.potato = new Image();
-this.potato.src = 'assets/potato.png';
-        const img = this.potato; // Load potato.png in your images object
-        this.ctx.save();
-        this.ctx.translate(x, y);
-        this.ctx.rotate(rotation);
-        this.ctx.drawImage(img, -60, -60, 60, 80);
-        this.ctx.restore();
-    }
     drawPenguin(x, y, rotation = 0, gliding = false) {
         const ctx = this.ctx;
 
