@@ -70,6 +70,9 @@ class Game {
         // Camera
         this.cameraX = 0;
 
+        // Fullscreen tracking
+        this.fullscreenRequested = false;
+
         this.jumpPadIntervalPx = 100 * 20; // 100m * 20 pixels/m = 2000px
         this.jumpPads = [];
         // Place jump-pads for the course
@@ -191,6 +194,13 @@ class Game {
 
     startPowerSelect() {
         this.startMusic();
+
+        // Request fullscreen on first interaction
+        if (!this.fullscreenRequested) {
+            this.ui.requestFullscreen();
+            this.fullscreenRequested = true;
+        }
+
         this.state = 'POWER_SELECT';
         this.powerBar.start();
         this.ui.hideMessage();

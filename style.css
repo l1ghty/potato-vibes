@@ -94,6 +94,34 @@ body {
     display: none;
 }
 
+/* Fullscreen Button */
+#fullscreen-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+#fullscreen-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+}
+
+#fullscreen-btn:active {
+    transform: scale(0.95);
+}
+
 /* Landscape Warning Overlay */
 #landscape-warning {
     display: none;
@@ -134,11 +162,25 @@ body {
 }
 
 @keyframes rotate-phone {
-    0% { transform: rotate(0deg); }
-    30% { transform: rotate(0deg); }
-    50% { transform: rotate(-90deg); }
-    80% { transform: rotate(-90deg); }
-    100% { transform: rotate(0deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    30% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(-90deg);
+    }
+
+    80% {
+        transform: rotate(-90deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 /* Media Query for Portrait Orientation */
