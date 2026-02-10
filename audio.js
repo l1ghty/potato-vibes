@@ -18,10 +18,23 @@ class AudioManager {
         this.tapSound.volume = 0.1;
 
         this.tapOn = false;
+        this.muted = false;
+    }
+
+    setMuted(muted) {
+        this.muted = muted;
+        if (muted) {
+            this.bgMusic.pause();
+            this.beepSound.pause();
+            this.rechargeSound.pause();
+            this.tapSound.pause();
+        } else if (this.musicStarted) {
+            this.bgMusic.play().catch(e => console.log("Audio play failed:", e));
+        }
     }
 
     startMusic() {
-        if (!this.musicStarted) {
+        if (!this.musicStarted && !this.muted) {
             this.bgMusic.play().catch(e => console.log("Audio play failed:", e));
             this.bgMusic.loop = false;
             this.bgMusic.onended = () => {
@@ -33,6 +46,7 @@ class AudioManager {
     }
 
     beep() {
+        if (this.muted) return;
         this.beepSound.play().catch(e => console.log("Audio play failed:", e));
         this.beepSound.onended = () => {
             this.beepSound.currentTime = 0;
@@ -40,6 +54,7 @@ class AudioManager {
     }
 
     recharge(speed = 1000) {
+        if (this.muted) return;
         // Map speed to pitch (0.5 to 2.0 range)
         // Base speed around 1000 gives normal pitch ~1.0
         let pitch = 0.5 + (speed / 1500);
@@ -51,6 +66,7 @@ class AudioManager {
     }
 
     tap() {
+        if (this.muted) return;
         if (this.tapOn) {
             return;
         }

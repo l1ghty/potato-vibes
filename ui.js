@@ -1,13 +1,20 @@
 // UI management
 class UI {
-    constructor() {
+    constructor(audioManager) {
         this.distanceElement = document.getElementById('distance');
         this.highscoreElement = document.getElementById('highscore');
         this.messageElement = document.getElementById('game-message');
         this.fullscreenBtn = document.getElementById('fullscreen-btn');
+        this.soundBtn = document.getElementById('sound-btn');
+        this.helpBtn = document.getElementById('help-btn');
+        this.helpOverlay = document.getElementById('help-overlay');
+        this.audioManager = audioManager;
+        this.soundMuted = false;
 
-        // Setup fullscreen button
+        // Setup buttons
         this.setupFullscreenButton();
+        this.setupSoundButton();
+        this.setupHelpButton();
 
         // Listen for fullscreen changes
         document.addEventListener('fullscreenchange', () => this.updateFullscreenButton());
@@ -78,6 +85,45 @@ class UI {
         } else {
             this.fullscreenBtn.classList.add('hidden');
         }
+    }
+
+    setupSoundButton() {
+        this.soundBtn.addEventListener('click', () => {
+            this.toggleSound();
+        });
+    }
+
+    toggleSound() {
+        this.soundMuted = !this.soundMuted;
+        this.audioManager.setMuted(this.soundMuted);
+
+        if (this.soundMuted) {
+            this.soundBtn.textContent = '🔇';
+            this.soundBtn.classList.add('muted');
+            this.soundBtn.title = 'Unmute Sound';
+        } else {
+            this.soundBtn.textContent = '🔊';
+            this.soundBtn.classList.remove('muted');
+            this.soundBtn.title = 'Mute Sound';
+        }
+    }
+
+    setupHelpButton() {
+        this.helpBtn.addEventListener('click', () => {
+            this.showHelp();
+        });
+
+        this.helpOverlay.addEventListener('click', () => {
+            this.hideHelp();
+        });
+    }
+
+    showHelp() {
+        this.helpOverlay.classList.remove('hidden');
+    }
+
+    hideHelp() {
+        this.helpOverlay.classList.add('hidden');
     }
 
     updateDistance(distance) {

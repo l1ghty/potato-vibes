@@ -23,9 +23,9 @@ class Game {
         this.angleIndicator = new AngleIndicator(this.canvas);
         this.physics = new Physics();
         this.scoring = new Scoring();
-        this.ui = new UI();
-        this.input = new InputHandler(this.canvas, this);
         this.audio = new AudioManager();
+        this.ui = new UI(this.audio);
+        this.input = new InputHandler(this.canvas, this);
         this.camera = new CameraManager();
         this.minimap = new MinimapRenderer(this.canvas);
 
