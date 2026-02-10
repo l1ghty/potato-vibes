@@ -52,9 +52,9 @@ class ParallaxBackground {
         this.cloudOffset = 0;
     }
 
-    update(deltaTime, penguinX) {
-        // Update parallax offset based on penguin position
-        this.offset = penguinX * 0.3;
+    update(deltaTime, potatoX) {
+        // Update parallax offset based on potato position
+        this.offset = potatoX * 0.3;
 
         // Slowly move clouds
         this.cloudOffset += deltaTime * 10;

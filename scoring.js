@@ -7,17 +7,17 @@ class Scoring {
     }
 
     loadHighscore() {
-        const saved = localStorage.getItem('yetisports_highscore');
+        const saved = localStorage.getItem('potatovibes_highscore');
         return saved ? parseInt(saved) : 0;
     }
 
     saveHighscore() {
-        localStorage.setItem('yetisports_highscore', this.highscore.toString());
+        localStorage.setItem('potatovibes_highscore', this.highscore.toString());
     }
 
-    updateDistance(penguinX, startX) {
+    updateDistance(potatoX, startX) {
         // Calculate distance in meters
-        const pixelDistance = Math.max(0, penguinX - startX);
+        const pixelDistance = Math.max(0, potatoX - startX);
         this.currentDistance = Math.round(pixelDistance / this.pixelsPerMeter);
 
         // Update highscore

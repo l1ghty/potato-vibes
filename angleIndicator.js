@@ -43,12 +43,12 @@ class AngleIndicator {
         }
     }
 
-    render(yetiX, yetiY) {
+    render(elbroX, elbroY) {
         if (!this.active && !this.locked) return;
 
         const ctx = this.ctx;
-        const startX = yetiX + 60;
-        const startY = yetiY - 10;
+        const startX = elbroX + 60;
+        const startY = elbroY - 10;
         const length = 100;
 
         // Convert angle to radians

@@ -1,4 +1,4 @@
-// Sprite rendering for Yeti, Penguin, and Golf Club
+// Sprite rendering for Elbro, Potato, and Golf Club
 class Sprites {
     constructor(ctx) {
         this.ctx = ctx;
@@ -12,7 +12,7 @@ class Sprites {
         this.elbroSwingImage.src = 'assets/elbro-swing.png';
     }
 
-    drawYeti(x, y, animationFrame, isSwinging = false) {
+    drawElbro(x, y, animationFrame, isSwinging = false) {
         const ctx = this.ctx;
 
         const useElbro = this.elbroImage && this.elbroImage.complete && this.elbroImage.naturalWidth > 0;
@@ -30,13 +30,13 @@ class Sprites {
             ctx.drawImage(this.elbroImage, x - 60, y - 90, 120, 180);
             ctx.restore();
         } else {
-            // Yeti body vector fallback
+            // Elbro body vector fallback
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
             ctx.ellipse(x, y, 40, 50, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Yeti head
+            // Elbro head
             ctx.beginPath();
             ctx.arc(x, y - 60, 30, 0, Math.PI * 2);
             ctx.fill();
@@ -90,7 +90,7 @@ class Sprites {
         }
     }
 
-    drawPenguin(x, y, rotation = 0, gliding = false) {
+    drawPotato(x, y, rotation = 0, gliding = false) {
         const ctx = this.ctx;
 
         const usePotato = this.potatoImage && this.potatoImage.complete && this.potatoImage.naturalWidth > 0;
@@ -113,7 +113,7 @@ class Sprites {
                 ctx.drawImage(imgToUse, -37, -37, 75, 75);
             } else {
                 // Draw normal potato
-                // Dimensions approx 40x50 to match original penguin size roughly
+                // Dimensions approx 40x50 to match original potato size roughly
                 ctx.drawImage(imgToUse, -20, -25, 40, 50);
             }
             ctx.restore();
@@ -122,13 +122,13 @@ class Sprites {
             ctx.translate(x, y);
             ctx.rotate(rotation);
 
-            // Penguin body (black)
+            // Potato body (black)
             ctx.fillStyle = '#000000';
             ctx.beginPath();
             ctx.ellipse(0, 0, 15, 20, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Penguin belly (white)
+            // Potato belly (white)
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
             ctx.ellipse(0, 5, 10, 15, 0, 0, Math.PI * 2);
@@ -217,10 +217,10 @@ class Sprites {
 
     drawJumpPad(x, y, radius) {
         const ctx = this.ctx;
-        const penguinHeight = 40; // 2 penguins
+        const potatoHeight = 40; // 2 potatos
         ctx.save();
         ctx.beginPath();
-        ctx.ellipse(x, y, radius, penguinHeight / 2, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, y, radius, potatoHeight / 2, 0, 0, Math.PI * 2);
         ctx.fillStyle = '#00FF80';
         ctx.fill();
         ctx.lineWidth = 4;
@@ -229,7 +229,7 @@ class Sprites {
         // Optional: add bounce icon
         ctx.beginPath();
         ctx.moveTo(x - radius / 2, y);
-        ctx.quadraticCurveTo(x, y - penguinHeight, x + radius / 2, y);
+        ctx.quadraticCurveTo(x, y - potatoHeight, x + radius / 2, y);
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 2;
         ctx.stroke();

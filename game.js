@@ -22,22 +22,22 @@ class Game {
         this.input = new InputHandler(this.canvas, this);
 
         // Game objects
-        this.yeti = {
+        this.elbro = {
             x: 200,
-            y: this.canvas.height - 185, // Ground level - yeti height
+            y: this.canvas.height - 185, // Ground level - elbro height
             animationFrame: 0
         };
 
-        this.penguin = {
-            x: 280,  // Closer to yeti (was 350)
-            y: this.canvas.height - 120, // Ground level - penguin height
+        this.potato = {
+            x: 280,  // Closer to elbro (was 350)
+            y: this.canvas.height - 120, // Ground level - potato height
             startX: 280,
             gliding: false
         };
 
         this.club = {
-            x: this.yeti.x + 60,
-            y: this.yeti.y - 10,
+            x: this.elbro.x + 60,
+            y: this.elbro.y - 10,
             rotation: 0
         };
 
@@ -54,6 +54,7 @@ class Game {
 
         this.rechargeSound = new Audio('assets/recharge.wav');
         this.rechargeSound.volume = 0.1;
+        this.rechargeSound.preservesPitch = false;
 
         this.tapSound = new Audio('assets/ball-tap.wav');
         this.tapSound.volume = 0.1;
@@ -71,7 +72,7 @@ class Game {
         const powerBarHeight = 40;
         for (let i = 1; i <= 100; i++) {
             this.jumpPads.push({
-                x: this.penguin.startX + i * this.jumpPadIntervalPx,
+                x: this.potato.startX + i * this.jumpPadIntervalPx,
                 y: this.groundY - powerBarHeight, // Pad bottom aligns with ground
                 width: powerBarWidth,
                 height: powerBarHeight
@@ -80,15 +81,15 @@ class Game {
 
         // Mouse event listeners for gliding
         this.canvas.addEventListener('mousedown', (e) => {
-            if (this.physics.isPenguinFlying()) {
-                this.penguin.gliding = true;
-                this.physics.penguinRotation = 0; // Face forward
-                this.physics.penguinRotationVelocity = 0;
+            if (this.physics.isPotatoFlying()) {
+                this.potato.gliding = true;
+                this.physics.potatoRotation = 0; // Face forward
+                this.physics.potatoRotationVelocity = 0;
             }
         });
         this.canvas.addEventListener('mouseup', (e) => {
-            if (this.physics.isPenguinFlying()) {
-                this.penguin.gliding = false;
+            if (this.physics.isPotatoFlying()) {
+                this.potato.gliding = false;
                 // Optionally restore rotation velocity, or let physics handle
                 this.tapOn = false;
             }
@@ -127,11 +128,15 @@ class Game {
             this.beepSound.currentTime = 0;
         };
     }
-    recharge() {
+    recharge(speed = 1000) {
+        // Map speed to pitch (0.5 to 2.0 range)
+        // Base speed around 1000 gives normal pitch ~1.0
+        let pitch = 0.5 + (speed / 1500);
+        pitch = Math.max(0.5, Math.min(2.0, pitch)); // Clamp between 0.5 and 2.0
+
+        this.rechargeSound.playbackRate = pitch;
+        this.rechargeSound.currentTime = 0; // Reset time to ensure it plays from start
         this.rechargeSound.play().catch(e => console.log("Audio play failed:", e));
-        this.rechargeSound.onended = () => {
-            this.rechargeSound.currentTime = 0;
-        };
     }
     tap() {
         if (this.tapOn) {
@@ -153,8 +158,8 @@ class Game {
     }
 
     handleSpacebar() {
-        if (this.physics.isPenguinFlying()) {
-            this.penguin.gliding = !this.penguin.gliding;
+        if (this.physics.isPotatoFlying()) {
+            this.potato.gliding = !this.potato.gliding;
         }
     }
 
@@ -163,6 +168,7 @@ class Game {
         this.state = 'POWER_SELECT';
         this.powerBar.start();
         this.ui.hideMessage();
+        this.gliding = false;
     }
 
     lockPower() {
@@ -181,8 +187,8 @@ class Game {
 
     reset() {
         this.state = 'READY';
-        this.penguin.x = this.penguin.startX;
-        this.penguin.y = this.groundY;
+        this.potato.x = this.potato.startX;
+        this.potato.y = this.groundY;
         this.physics.reset();
         this.scoring.reset();
         this.cameraX = 0;
@@ -192,10 +198,10 @@ class Game {
 
     update(deltaTime) {
         // Update animation frame
-        this.yeti.animationFrame++;
+        this.elbro.animationFrame++;
 
         // Update parallax
-        this.parallax.update(deltaTime, this.penguin.x);
+        this.parallax.update(deltaTime, this.potato.x);
 
         // Update based on state
         if (this.state === 'POWER_SELECT') {
@@ -206,8 +212,8 @@ class Game {
             // Update club
             const clubPos = this.physics.updateClub(
                 deltaTime,
-                this.yeti.x,
-                this.yeti.y
+                this.elbro.x,
+                this.elbro.y
             );
             this.club.x = clubPos.x;
             this.club.y = clubPos.y;
@@ -218,52 +224,52 @@ class Game {
             if (this.physics.checkCollision(
                 clubTip.x,
                 clubTip.y,
-                this.penguin.x,
-                this.penguin.y
+                this.potato.x,
+                this.potato.y
             )) {
                 this.state = 'FLYING';
             }
 
-            // Update penguin if flying
-            if (this.physics.isPenguinFlying()) {
+            // Update potato if flying
+            if (this.physics.isPotatoFlying()) {
                 this.state = 'FLYING';
-                const newPos = this.physics.updatePenguin(
+                const newPos = this.physics.updatePotato(
                     deltaTime,
-                    { x: this.penguin.x, y: this.penguin.y },
+                    { x: this.potato.x, y: this.potato.y },
                     this.groundY
                 );
-                this.penguin.x = newPos.x;
-                this.penguin.y = newPos.y;
+                this.potato.x = newPos.x;
+                this.potato.y = newPos.y;
 
-                // Update camera to follow penguin
-                this.cameraX = Math.max(0, this.penguin.x - 400);
+                // Update camera to follow potato
+                this.cameraX = Math.max(0, this.potato.x - 400);
 
                 // Update distance
-                this.scoring.updateDistance(this.penguin.x, this.penguin.startX);
+                this.scoring.updateDistance(this.potato.x, this.potato.startX);
                 this.ui.updateDistance(this.scoring.getCurrentDistance());
                 this.ui.updateHighscore(this.scoring.getHighscore());
 
                 // Check if landed
-                if (!this.physics.isPenguinFlying() && this.state === 'FLYING') {
+                if (!this.physics.isPotatoFlying() && this.state === 'FLYING') {
                     this.state = 'LANDED';
                     this.showResults();
                 }
             }
 
-            // If swing finished and penguin not hit, always launch penguin
-            if (!this.physics.isSwinging() && !this.physics.isPenguinFlying() && this.state === 'SWINGING') {
+            // If swing finished and potato not hit, always launch potato
+            if (!this.physics.isSwinging() && !this.physics.isPotatoFlying() && this.state === 'SWINGING') {
                 // Force hit
-                this.physics.hitPenguin();
+                this.physics.hitPotato();
                 this.state = 'FLYING';
             }
         }
 
         // Gliding physics
-        if (this.penguin.gliding && this.physics.isPenguinFlying()) {
+        if (this.potato.gliding && this.physics.isPotatoFlying()) {
             this.physics.gravity = 150; // Increase gravity for less powerful glide
             this.physics.airResistance = 0.997; // More air resistance for less powerful glide
-            this.physics.penguinRotation = -0.6; // Angle to the right while gliding
-            this.physics.penguinRotationVelocity = 0;
+            this.physics.potatoRotation = -0.6; // Angle to the right while gliding
+            this.physics.potatoRotationVelocity = 0;
             this.tap();
         } else {
             this.physics.gravity = 600; // Normal gravity
@@ -272,13 +278,13 @@ class Game {
 
         // Jump-pad collision and boost
         for (const pad of this.jumpPads) {
-            // Penguin bounding box
-            const penguinWidth = 40;
-            const penguinHeight = 40;
-            const penguinLeft = this.penguin.x - penguinWidth / 2;
-            const penguinRight = this.penguin.x + penguinWidth / 2;
-            const penguinTop = this.penguin.y - penguinHeight;
-            const penguinBottom = this.penguin.y;
+            // Potato bounding box
+            const potatoWidth = 40;
+            const potatoHeight = 40;
+            const potatoLeft = this.potato.x - potatoWidth / 2;
+            const potatoRight = this.potato.x + potatoWidth / 2;
+            const potatoTop = this.potato.y - potatoHeight;
+            const potatoBottom = this.potato.y;
             // Pad bounding box (appearance and collision are the same)
             const padLeft = pad.x;
             const padRight = pad.x + pad.width;
@@ -286,33 +292,39 @@ class Game {
             const padBottom = pad.y + pad.height;
             // Check overlap (collision matches appearance exactly)
             if (
-                penguinRight > padLeft &&
-                penguinLeft < padRight &&
-                penguinBottom > padTop &&
-                penguinTop < padBottom &&
-                this.physics.isPenguinFlying()
+                potatoRight > padLeft &&
+                potatoLeft < padRight &&
+                potatoBottom > padTop &&
+                potatoTop < padBottom &&
+                this.physics.isPotatoFlying()
             ) {
+                // Calculate impact speed for sound pitch
+                const speed = Math.sqrt(
+                    this.physics.potatoVelocity.x ** 2 +
+                    this.physics.potatoVelocity.y ** 2
+                );
+
                 // Play sound only if we are hitting the pad
-                this.recharge();
+                this.recharge(speed);
 
                 // Apply upward and rightward force
-                this.physics.penguinVelocity.y = -1200;
-                this.physics.penguinVelocity.x += 800; // Add strong rightward force
+                this.physics.potatoVelocity.y = -1200;
+                this.physics.potatoVelocity.x += 800; // Add strong rightward force
                 // Stop gliding and trigger rotation
-                this.penguin.gliding = false;
-                this.physics.penguinRotationVelocity = 2; // Resume rotation
+                this.potato.gliding = false;
+                this.physics.potatoRotationVelocity = 2; // Resume rotation
             }
         }
 
         // Bounce: stop gliding and trigger rotation
         if (
-            this.penguin.y >= this.groundY &&
-            this.physics.isPenguinFlying() &&
-            Math.abs(this.physics.penguinVelocity.y) > 50 &&
-            this.penguin.gliding
+            this.potato.y >= this.groundY &&
+            this.physics.isPotatoFlying() &&
+            Math.abs(this.physics.potatoVelocity.y) > 50 &&
+            this.potato.gliding
         ) {
-            this.penguin.gliding = false;
-            this.physics.penguinRotationVelocity = 2; // Resume rotation (example value)
+            this.potato.gliding = false;
+            this.physics.potatoRotationVelocity = 2; // Resume rotation (example value)
         }
 
         this.powerBar.update(deltaTime); // Always update powerBar for fade
@@ -347,23 +359,23 @@ class Game {
         this.ctx.save();
         this.ctx.translate(-this.cameraX, 0);
 
-        // Render penguin
-        let penguinRotation = this.penguin.gliding ? 1.2 : this.physics.getPenguinRotation();
-        this.sprites.drawPenguin(
-            this.penguin.x,
-            this.penguin.y,
-            penguinRotation,
-            this.penguin.gliding
+        // Render potato
+        let potatoRotation = this.potato.gliding ? 1.2 : this.physics.getPotatoRotation();
+        this.sprites.drawPotato(
+            this.potato.x,
+            this.potato.y,
+            potatoRotation,
+            this.potato.gliding
         );
 
         // Check if we should show the swing pose
         const useSwingPose = this.state === 'SWINGING' || this.state === 'FLYING' || this.state === 'LANDED';
 
-        // Render yeti (pass useSwingPose)
-        this.sprites.drawYeti(
-            this.yeti.x,
-            this.yeti.y,
-            this.yeti.animationFrame,
+        // Render elbro (pass useSwingPose)
+        this.sprites.drawElbro(
+            this.elbro.x,
+            this.elbro.y,
+            this.elbro.animationFrame,
             useSwingPose
         );
 
@@ -397,8 +409,8 @@ class Game {
 
         if (this.state === 'ANGLE_SELECT') {
             this.angleIndicator.render(
-                this.yeti.x - this.cameraX,
-                this.yeti.y
+                this.elbro.x - this.cameraX,
+                this.elbro.y
             );
         }
 
@@ -466,12 +478,12 @@ class Game {
             }
         }
         ctx.restore();
-        // Draw penguin (as a dot above the pads)
-        const penguinRelX = (this.penguin.x - worldStart) / worldRange;
+        // Draw potato (as a dot above the pads)
+        const potatoRelX = (this.potato.x - worldStart) / worldRange;
         ctx.fillStyle = '#FFD700';
         ctx.beginPath();
         ctx.arc(
-            Math.max(mapX, Math.min(mapX + minimapWidth, mapX + penguinRelX * minimapWidth)),
+            Math.max(mapX, Math.min(mapX + minimapWidth, mapX + potatoRelX * minimapWidth)),
             padVisualY - 8,
             6, 0, Math.PI * 2
         );
