@@ -63,12 +63,12 @@ class MinimapRenderer {
 
     drawPotato(ctx, mapX, potatoX, worldStart, worldRange, padVisualY) {
         const potatoRelX = (potatoX - worldStart) / worldRange;
-        ctx.fillStyle = '#FFD700';
+        ctx.fillStyle = '#de7512ff';
         ctx.beginPath();
-        ctx.arc(
+        ctx.ellipse(
             Math.max(mapX, Math.min(mapX + this.width, mapX + potatoRelX * this.width)),
             padVisualY - 8,
-            6, 0, Math.PI * 2
+            6, 4, 0, 0, Math.PI * 2
         );
         ctx.fill();
     }
@@ -79,7 +79,7 @@ class MinimapRenderer {
         const viewRelStart = (viewStart - worldStart) / worldRange;
         const viewRelEnd = (viewEnd - worldStart) / worldRange;
 
-        ctx.strokeStyle = '#FF4444';
+        ctx.strokeStyle = '#a17f7fff';
         ctx.lineWidth = 2;
         ctx.strokeRect(
             mapX + Math.max(0, viewRelStart * this.width),
