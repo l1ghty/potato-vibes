@@ -25,6 +25,9 @@ class Game {
         this.scoring = new Scoring();
         this.ui = new UI();
         this.input = new InputHandler(this.canvas, this);
+        this.audio = new AudioManager();
+        this.camera = new CameraManager();
+        this.minimap = new MinimapRenderer(this.canvas);
 
         // Game objects
         this.elbro = {
@@ -48,44 +51,14 @@ class Game {
 
         this.groundY = this.canvas.height - 120;
 
-        // Audio
-        this.bgMusic = new Audio('assets/Syn Cole - Feel Good.mp3');
-        this.bgMusic.volume = 0.1;
-        this.musicStarted = false;
-
-
-        this.beepSound = new Audio('assets/beep.wav');
-        this.beepSound.volume = 0.1;
-
-        this.rechargeSound = new Audio('assets/recharge.wav');
-        this.rechargeSound.volume = 0.1;
-        this.rechargeSound.preservesPitch = false;
-
-        this.tapSound = new Audio('assets/ball-tap.wav');
-        this.tapSound.volume = 0.1;
-
         // Timing
         this.lastTime = performance.now();
-
-        // Camera
-        this.cameraX = 0;
 
         // Fullscreen tracking
         this.fullscreenRequested = false;
 
-        this.jumpPadIntervalPx = 100 * 20; // 100m * 20 pixels/m = 2000px
-        this.jumpPads = [];
-        // Place jump-pads for the course
-        const powerBarWidth = 300;
-        const powerBarHeight = 40;
-        for (let i = 1; i <= 100; i++) {
-            this.jumpPads.push({
-                x: this.potato.startX + i * this.jumpPadIntervalPx,
-                y: this.groundY - powerBarHeight, // Pad bottom aligns with ground
-                width: powerBarWidth,
-                height: powerBarHeight
-            });
-        }
+        // Initialize jump pads
+        this.jumpPadManager = new JumpPadManager(this.potato.startX, this.groundY);
 
         // Mouse event listeners for gliding
         this.canvas.addEventListener('mousedown', (e) => {
@@ -98,7 +71,7 @@ class Game {
         this.canvas.addEventListener('mouseup', (e) => {
             if (this.physics.isPotatoFlying()) {
                 this.potato.gliding = false;
-                this.tapOn = false;
+                this.audio.stopTap();
             }
         });
 
@@ -116,25 +89,13 @@ class Game {
             // e.preventDefault(); // usually not needed on touchend but safer
             if (this.physics.isPotatoFlying()) {
                 this.potato.gliding = false;
-                this.tapOn = false;
+                this.audio.stopTap();
             }
         }, { passive: false });
 
         // Start game loop
         this.ui.showMessage('Click to Start!', true);
         this.gameLoop();
-    }
-
-    startMusic() {
-        if (!this.musicStarted) {
-            this.bgMusic.play().catch(e => console.log("Audio play failed:", e));
-            this.bgMusic.loop = false;
-            this.bgMusic.onended = () => {
-                this.bgMusic.currentTime = 0;
-                this.musicStarted = false;
-            };
-            this.musicStarted = true;
-        }
     }
 
     handleClick() {
@@ -148,35 +109,8 @@ class Game {
 
         // Only beep if we are in an interactive state for clicking
         if (['READY', 'POWER_SELECT', 'ANGLE_SELECT'].includes(this.state)) {
-            this.beep();
+            this.audio.beep();
         }
-    }
-    beep() {
-        this.beepSound.play().catch(e => console.log("Audio play failed:", e));
-        this.beepSound.onended = () => {
-            this.beepSound.currentTime = 0;
-        };
-    }
-    recharge(speed = 1000) {
-        // Map speed to pitch (0.5 to 2.0 range)
-        // Base speed around 1000 gives normal pitch ~1.0
-        let pitch = 0.5 + (speed / 1500);
-        pitch = Math.max(0.5, Math.min(2.0, pitch)); // Clamp between 0.5 and 2.0
-
-        this.rechargeSound.playbackRate = pitch;
-        this.rechargeSound.currentTime = 0; // Reset time to ensure it plays from start
-        this.rechargeSound.play().catch(e => console.log("Audio play failed:", e));
-    }
-    tap() {
-        if (this.tapOn) {
-            return;
-        }
-        this.tapOn = true;
-        this.tapSound.play().catch(e => console.log("Audio play failed:", e));
-        this.tapSound.loop = false;
-        this.tapSound.onended = () => {
-            this.tapSound.currentTime = 0;
-        };
     }
 
     handleMessageClick() {
@@ -193,7 +127,7 @@ class Game {
     }
 
     startPowerSelect() {
-        this.startMusic();
+        this.audio.startMusic();
 
         // Request fullscreen on first interaction
         if (!this.fullscreenRequested) {
@@ -227,7 +161,7 @@ class Game {
         this.potato.y = this.groundY;
         this.physics.reset();
         this.scoring.reset();
-        this.cameraX = 0;
+        this.camera.reset();
         this.ui.hideMessage();
         this.ui.updateDistance(0);
     }
@@ -283,7 +217,7 @@ class Game {
                 this.potato.y = newPos.y;
 
                 // Update camera to follow potato
-                this.cameraX = Math.max(0, this.potato.x - 400);
+                this.camera.update(this.potato.x);
 
                 // Update distance
                 this.scoring.updateDistance(this.potato.x, this.potato.startX);
@@ -311,50 +245,21 @@ class Game {
             this.physics.airResistance = 0.997; // More air resistance for less powerful glide
             this.physics.potatoRotation = -0.6; // Angle to the right while gliding
             this.physics.potatoRotationVelocity = 0;
-            this.tap();
+            this.audio.tap();
         } else {
             this.physics.gravity = 600; // Normal gravity
             this.physics.airResistance = 0.995; // Normal air resistance
         }
 
         // Jump-pad collision and boost
-        for (const pad of this.jumpPads) {
-            // Potato bounding box
-            const potatoWidth = 40;
-            const potatoHeight = 40;
-            const potatoLeft = this.potato.x - potatoWidth / 2;
-            const potatoRight = this.potato.x + potatoWidth / 2;
-            const potatoTop = this.potato.y - potatoHeight;
-            const potatoBottom = this.potato.y;
-            // Pad bounding box (appearance and collision are the same)
-            const padLeft = pad.x;
-            const padRight = pad.x + pad.width;
-            const padTop = pad.y;
-            const padBottom = pad.y + pad.height;
-            // Check overlap (collision matches appearance exactly)
-            if (
-                potatoRight > padLeft &&
-                potatoLeft < padRight &&
-                potatoBottom > padTop &&
-                potatoTop < padBottom &&
-                this.physics.isPotatoFlying()
-            ) {
-                // Calculate impact speed for sound pitch
-                const speed = Math.sqrt(
-                    this.physics.potatoVelocity.x ** 2 +
-                    this.physics.potatoVelocity.y ** 2
-                );
+        const collision = this.jumpPadManager.checkCollision(this.potato, this.physics);
+        if (collision.collided) {
+            // Play sound with speed-based pitch
+            this.audio.recharge(collision.speed);
 
-                // Play sound only if we are hitting the pad
-                this.recharge(speed);
-
-                // Apply upward and rightward force
-                this.physics.potatoVelocity.y = -1200;
-                this.physics.potatoVelocity.x += 800; // Add strong rightward force
-                // Stop gliding and trigger rotation
-                this.potato.gliding = false;
-                this.physics.potatoRotationVelocity = 2; // Resume rotation
-            }
+            // Stop gliding and trigger rotation
+            this.potato.gliding = false;
+            this.physics.potatoRotationVelocity = 2; // Resume rotation
         }
 
         // Bounce: stop gliding and trigger rotation
@@ -392,13 +297,13 @@ class Game {
 
         // Save context and apply camera
         this.ctx.save();
-        this.ctx.translate(-this.cameraX, 0);
+        this.ctx.translate(-this.camera.getX(), 0);
 
         // Render parallax background (ground now scrolls with camera)
         this.ctx.restore();
-        this.parallax.render(this.cameraX);
+        this.parallax.render(this.camera.getX());
         this.ctx.save();
-        this.ctx.translate(-this.cameraX, 0);
+        this.ctx.translate(-this.camera.getX(), 0);
 
         // Render potato
         let potatoRotation = this.potato.gliding ? 1.2 : this.physics.getPotatoRotation();
@@ -433,14 +338,14 @@ class Game {
             );
         }
 
-        // Render jump-pads (remove extra camera transform)
-        for (const pad of this.jumpPads) {
-            this.ctx.fillStyle = 'rgba(0, 200, 255, 0.5)';
-            this.ctx.fillRect(pad.x, pad.y, pad.width, pad.height);
-            this.ctx.strokeStyle = '#00BFFF';
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(pad.x, pad.y, pad.width, pad.height);
-        }
+        // Restore context
+        this.ctx.restore();
+
+        // Render jump-pads
+        this.jumpPadManager.render(this.ctx, this.camera.getX());
+
+        // Save context again for UI elements
+        this.ctx.save();
 
         // Restore context
         this.ctx.restore();
@@ -450,99 +355,13 @@ class Game {
 
         if (this.state === 'ANGLE_SELECT') {
             this.angleIndicator.render(
-                this.elbro.x - this.cameraX,
+                this.elbro.x - this.camera.getX(),
                 this.elbro.y
             );
         }
 
         // Render minimap
-        this.renderMinimap();
-    }
-
-    renderMinimap() {
-        const minimapWidth = 300;
-        const minimapHeight = 60;
-        const margin = 16;
-        const ctx = this.ctx;
-        const canvas = this.canvas;
-        // Minimap world range: from cameraX to cameraX + 2*canvas.width
-        const worldStart = this.cameraX;
-        const worldEnd = this.cameraX + 2 * canvas.width;
-        const worldRange = worldEnd - worldStart;
-        // Minimap position
-        const mapX = margin;
-        const mapY = canvas.height - minimapHeight - margin;
-        // Draw minimap background (blue sky)
-        ctx.save();
-        ctx.globalAlpha = 0.95;
-        const skyGrad = ctx.createLinearGradient(0, mapY, 0, mapY + minimapHeight);
-        skyGrad.addColorStop(0, '#87CEEB');
-        skyGrad.addColorStop(1, '#E0F6FF');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(mapX, mapY, minimapWidth, minimapHeight);
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = '#FFF';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(mapX, mapY, minimapWidth, minimapHeight);
-        // Draw ground (green) at the bottom of the minimap
-        const groundHeight = 16;
-        const groundY = mapY + minimapHeight - groundHeight;
-        const groundGrad = ctx.createLinearGradient(0, groundY, 0, groundY + groundHeight);
-        groundGrad.addColorStop(0, '#90EE90');
-        groundGrad.addColorStop(1, '#228B22');
-        ctx.fillStyle = groundGrad;
-        ctx.fillRect(mapX, groundY, minimapWidth, groundHeight);
-        // Draw all jump-pads in minimap range, clipped to minimap
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(mapX, mapY, minimapWidth, minimapHeight);
-        ctx.clip();
-        ctx.fillStyle = '#00BFFF';
-        const padVisualHeight = 10;
-        const padVisualY = groundY - padVisualHeight + 2;
-        for (const pad of this.jumpPads) {
-            if (pad.x + pad.width < worldStart || pad.x > worldEnd) continue;
-            let relX = (pad.x - worldStart) / worldRange;
-            let padW = pad.width / worldRange * minimapWidth;
-            // Clamp pad position and width to minimap bounds
-            let drawX = mapX + relX * minimapWidth;
-            let drawW = padW;
-            if (drawX < mapX) {
-                drawW -= (mapX - drawX);
-                drawX = mapX;
-            }
-            if (drawX + drawW > mapX + minimapWidth) {
-                drawW = mapX + minimapWidth - drawX;
-            }
-            if (drawW > 0) {
-                ctx.fillRect(drawX, padVisualY, drawW, padVisualHeight);
-            }
-        }
-        ctx.restore();
-        // Draw potato (as a dot above the pads)
-        const potatoRelX = (this.potato.x - worldStart) / worldRange;
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(
-            Math.max(mapX, Math.min(mapX + minimapWidth, mapX + potatoRelX * minimapWidth)),
-            padVisualY - 8,
-            6, 0, Math.PI * 2
-        );
-        ctx.fill();
-        // Draw camera view rectangle
-        const viewStart = this.cameraX;
-        const viewEnd = this.cameraX + canvas.width;
-        const viewRelStart = (viewStart - worldStart) / worldRange;
-        const viewRelEnd = (viewEnd - worldStart) / worldRange;
-        ctx.strokeStyle = '#FF4444';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-            mapX + Math.max(0, viewRelStart * minimapWidth),
-            mapY + 4,
-            Math.max(8, Math.min(minimapWidth, (viewRelEnd - viewRelStart) * minimapWidth)),
-            minimapHeight - 8
-        );
-        ctx.restore();
+        this.minimap.render(this.ctx, this.camera.getX(), this.potato.x, this.jumpPadManager);
     }
 
     resizeCanvas() {
