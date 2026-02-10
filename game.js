@@ -241,7 +241,7 @@ class Game {
 
         // Gliding physics
         if (this.potato.gliding && this.physics.isPotatoFlying()) {
-            this.physics.gravity = 150; // Increase gravity for less powerful glide
+            this.physics.gravity = 120; // Increase gravity for less powerful glide
             this.physics.airResistance = 0.997; // More air resistance for less powerful glide
             this.physics.potatoRotation = -0.6; // Angle to the right while gliding
             this.physics.potatoRotationVelocity = 0;
