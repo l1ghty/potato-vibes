@@ -31,6 +31,7 @@ class ParallaxBackground {
         //Sideeye guy
         this.sideeyeImg = new Image();
         this.sideeyeImg.src = 'assets/sideeye1.png';
+        this.sideeyeImg
         this.sideeyeImg2 = new Image();
         this.sideeyeImg2.src = 'assets/sideeye2.png';
 
@@ -100,7 +101,7 @@ class ParallaxBackground {
             const sideeyeImage = switchIndicator ? this.sideeyeImg : this.sideeyeImg2;
 
             for (let i = -1; i <= Math.ceil(width / this.sideeyeImg.width) + 1; i++) {
-                    this.ctx.drawImage(sideeyeImage, sideeyeX + i * width - 100, sideeyeY , 95, 150);
+                    this.ctx.drawImage(sideeyeImage, sideeyeX + i * width * 1.5 - 100, sideeyeY , 95, 150);
             }
 
         }
