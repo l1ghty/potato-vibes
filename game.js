@@ -5,8 +5,13 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
 
         // Set canvas size
+        // Set canvas size (internal resolution)
         this.canvas.width = 1200;
         this.canvas.height = 600;
+
+        // Handle window resizing
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
 
         // Game state
         this.state = 'READY'; // READY, POWER_SELECT, ANGLE_SELECT, SWINGING, FLYING, LANDED
@@ -90,10 +95,27 @@ class Game {
         this.canvas.addEventListener('mouseup', (e) => {
             if (this.physics.isPotatoFlying()) {
                 this.potato.gliding = false;
-                // Optionally restore rotation velocity, or let physics handle
                 this.tapOn = false;
             }
         });
+
+        // Touch event listeners for gliding
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent scrolling
+            if (this.physics.isPotatoFlying()) {
+                this.potato.gliding = true;
+                this.physics.potatoRotation = 0;
+                this.physics.potatoRotationVelocity = 0;
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            // e.preventDefault(); // usually not needed on touchend but safer
+            if (this.physics.isPotatoFlying()) {
+                this.potato.gliding = false;
+                this.tapOn = false;
+            }
+        }, { passive: false });
 
         // Start game loop
         this.ui.showMessage('Click to Start!', true);
@@ -120,7 +142,11 @@ class Game {
         } else if (this.state === 'ANGLE_SELECT') {
             this.lockAngle();
         }
-        this.beep();
+
+        // Only beep if we are in an interactive state for clicking
+        if (['READY', 'POWER_SELECT', 'ANGLE_SELECT'].includes(this.state)) {
+            this.beep();
+        }
     }
     beep() {
         this.beepSound.play().catch(e => console.log("Audio play failed:", e));
@@ -197,10 +223,15 @@ class Game {
     }
 
     update(deltaTime) {
+        // Pause game if in portrait mode
+        if (window.innerHeight > window.innerWidth) {
+            return;
+        }
+
         // Update animation frame
         this.elbro.animationFrame++;
 
-        // Update parallax
+        // Update parallax (only if not paused)
         this.parallax.update(deltaTime, this.potato.x);
 
         // Update based on state
@@ -502,6 +533,28 @@ class Game {
             minimapHeight - 8
         );
         ctx.restore();
+    }
+
+    resizeCanvas() {
+        const aspectRatio = 1200 / 600;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const windowRatio = width / height;
+
+        let finalWidth, finalHeight;
+
+        if (windowRatio > aspectRatio) {
+            // Window is wider than game, constrain by height
+            finalHeight = height;
+            finalWidth = height * aspectRatio;
+        } else {
+            // Window is narrower than game, constrain by width
+            finalWidth = width;
+            finalHeight = width / aspectRatio;
+        }
+
+        this.canvas.style.width = `${finalWidth}px`;
+        this.canvas.style.height = `${finalHeight}px`;
     }
 
     gameLoop() {
