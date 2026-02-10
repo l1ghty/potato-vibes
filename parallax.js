@@ -28,6 +28,12 @@ class ParallaxBackground {
             </svg>
         `);
 
+        //Sideeye guy
+        this.sideeyeImg = new Image();
+        this.sideeyeImg.src = 'assets/sideeye1.png';
+        this.sideeyeImg2 = new Image();
+        this.sideeyeImg2.src = 'assets/sideeye2.png';
+
         // Clouds - simple SVG as base64
         this.cloudsImg = new Image();
         this.cloudsImg.src = 'data:image/svg+xml;base64,' + btoa(`
@@ -82,6 +88,21 @@ class ParallaxBackground {
             if (cloudX + this.cloudsImg.width < width) {
                 this.ctx.drawImage(this.cloudsImg, cloudX + this.cloudsImg.width * 2, 20, this.cloudsImg.width, 150);
             }
+        }
+
+        //Draw sideeye guy
+        if (this.sideeyeImg.complete) {
+            const sideeyeSpeed = 0.45;
+            const sideeyeX = -this.offset * sideeyeSpeed;
+
+            const sideeyeY = height - 220;
+            const switchIndicator = Math.floor(Date.now() / 3000) % 2; // Switch every 500ms
+            const sideeyeImage = switchIndicator ? this.sideeyeImg : this.sideeyeImg2;
+
+            for (let i = -1; i <= Math.ceil(width / this.sideeyeImg.width) + 1; i++) {
+                    this.ctx.drawImage(sideeyeImage, sideeyeX + i * width - 100, sideeyeY , 95, 150);
+            }
+
         }
 
         // Draw mountains (medium parallax)
