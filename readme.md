@@ -1,1 +1,1 @@
-[https://l1ghty.github.io/potato-vibes/](play)
+[Play](https://l1ghty.github.io/potato-vibes/)
