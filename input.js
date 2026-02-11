@@ -20,13 +20,6 @@ class InputHandler {
             e.preventDefault();
             this.handleMessageClick();
         }, { passive: false });
-
-        // Keyboard listener for spacebar
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                this.game.handleSpacebar();
-            }
-        });
     }
 
     handleClick(e) {

@@ -88,10 +88,11 @@ class AngleIndicator {
 
         // Instruction
         if (!this.locked) {
-            ctx.font = '16px Arial';
-            ctx.fillStyle = '#FFD700';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
             ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.strokeText('Click to lock angle!', startX, startY - 110);
             ctx.fillText('Click to lock angle!', startX, startY - 110);
         }

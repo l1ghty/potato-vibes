@@ -120,12 +120,6 @@ class Game {
         }
     }
 
-    handleSpacebar() {
-        if (this.physics.isPotatoFlying()) {
-            this.potato.gliding = !this.potato.gliding;
-        }
-    }
-
     startPowerSelect() {
         this.audio.startMusic();
 

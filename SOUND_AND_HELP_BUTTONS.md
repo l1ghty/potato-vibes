@@ -30,7 +30,7 @@ Successfully added a sound toggle button and help button to the potato-vibes gam
 - Click to display "How to Play" overlay
 - Shows game instructions:
   - Objective: Launch the potato as far as possible
-  - Controls: Click for power/angle, hold to glide, spacebar toggle
+  - Controls: Click for power/angle, hold to glide
   - Jump pads: Hit blue pads for boost
 - Click anywhere on overlay to close
 - Overlay has dark semi-transparent background with blur effect
