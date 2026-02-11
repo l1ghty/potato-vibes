@@ -5,9 +5,11 @@ class PowerBar {
         this.ctx = canvas.getContext('2d');
         this.power = 0;
         this.increasing = true;
+        this.angle = 0;
         this.active = false;
         this.locked = false;
         this.speed = 150; // Power units per second
+        this.lockTime = 0;
     }
 
     start() {
@@ -15,11 +17,13 @@ class PowerBar {
         this.locked = false;
         this.power = 0;
         this.increasing = true;
+        this.lockTime = 0;
     }
 
     lock() {
         this.locked = true;
         this.active = false;
+        this.lockTime = new Date().getTime();
         return this.power;
     }
 
@@ -48,17 +52,18 @@ class PowerBar {
         let x, y;
         const width = 300;
         const height = 40;
+        const delayedRemovePowerBar = this.lockTime ? new Date().getTime() - this.lockTime < 1000 : true;
 
-        // Move power bar to bottom after shoot
-        if (this.locked) {
-            x = 30; // left side
-            y = this.canvas.height - 60; // Near bottom
-        } else {
-            x = this.canvas.width / 2 - 150;
-            y = this.canvas.height - 150;
+        x = this.canvas.width / 2 - 150;
+        y = this.canvas.height - 150;
+        if (!delayedRemovePowerBar) {
+            x = 20;
+            y = this.canvas.height - 60;
         }
 
-        if (!this.locked) {
+
+        if (delayedRemovePowerBar) {
+
             // Background
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(x - 10, y - 10, width + 20, height + 20);
@@ -94,7 +99,10 @@ class PowerBar {
         ctx.fillStyle = '#FFFFFF';
         ctx.font = 'bold 20px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('POWER: ' + Math.round(this.power) + "%", x + width / 2, y - 20);
+        if (!delayedRemovePowerBar) {
+            ctx.fillText('POWER: ' + Math.round(this.power) + "%, ANGLE: " + Math.round(this.angle) + "°", x + width / 2, y - 20);
+        }
+
 
         // Instruction
         if (!this.locked) {

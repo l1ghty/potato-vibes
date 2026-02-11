@@ -144,6 +144,7 @@ class Game {
     lockAngle() {
         const angle = this.angleIndicator.lock();
         const power = this.powerBar.getPower();
+        this.powerBar.angle = angle;
 
         this.state = 'SWINGING';
         this.physics.startSwing(power, angle);
