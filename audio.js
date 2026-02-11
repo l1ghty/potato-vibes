@@ -7,6 +7,9 @@ class AudioManager {
         this.musicStarted = false;
 
         // Sound effects
+        this.startSound = new Audio('assets/shoot.wav');
+        this.startSound.volume = 0.5;
+
         this.beepSound = new Audio('assets/beep.wav');
         this.beepSound.volume = 0.1;
 
@@ -16,6 +19,9 @@ class AudioManager {
 
         this.tapSound = new Audio('assets/ball-tap.wav');
         this.tapSound.volume = 0.1;
+
+        this.bounceSound = new Audio('assets/tac.wav');
+        this.bounceSound.volume = 0.5;
 
         this.tapOn = false;
         this.muted = false;
@@ -45,11 +51,26 @@ class AudioManager {
         }
     }
 
+    start() {
+        if (this.muted) return;
+        this.startSound.play().catch(e => console.log("Audio play failed:", e));
+        this.startSound.onended = () => {
+            this.startSound.currentTime = 0;
+        };
+    }
+
     beep() {
         if (this.muted) return;
         this.beepSound.play().catch(e => console.log("Audio play failed:", e));
         this.beepSound.onended = () => {
             this.beepSound.currentTime = 0;
+        };
+    }
+    bounce() {
+        if (this.muted) return;
+        this.bounceSound.play().catch(e => console.log("Audio play failed:", e));
+        this.bounceSound.onended = () => {
+            this.bounceSound.currentTime = 0;
         };
     }
 

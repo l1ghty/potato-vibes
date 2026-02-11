@@ -111,6 +111,9 @@ class Game {
         if (['READY', 'POWER_SELECT', 'ANGLE_SELECT'].includes(this.state)) {
             this.audio.beep();
         }
+        if (this.state === 'SWINGING') {
+            this.audio.start();
+        }
     }
 
     handleMessageClick() {
@@ -268,6 +271,10 @@ class Game {
         ) {
             this.potato.gliding = false;
             this.physics.potatoRotationVelocity = 2; // Resume rotation (example value)
+        }
+
+        if (this.potato.y >= this.groundY && this.state === 'FLYING') {
+            this.audio.bounce();
         }
 
         this.powerBar.update(deltaTime); // Always update powerBar for fade
