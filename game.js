@@ -169,6 +169,8 @@ class Game {
     update(deltaTime) {
         // Pause game if in portrait mode
         if (window.innerHeight > window.innerWidth) {
+            //leave fullscreen
+            document.exitFullscreen();
             return;
         }
 
