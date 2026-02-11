@@ -3,7 +3,7 @@ class AudioManager {
     constructor() {
         // Background music
         this.bgMusic = new Audio('assets/Syn Cole - Feel Good.mp3');
-        this.bgMusic.volume = 0.1;
+        this.bgMusic.volume = 0.05;
         this.musicStarted = false;
 
         // Sound effects
