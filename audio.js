@@ -1,30 +1,66 @@
 // Audio management for game sounds and music
 class AudioManager {
     constructor() {
+        this.musicVolume = 0.05;
+        this.sfxVolume = 1;
+
         // Background music
         this.bgMusic = new Audio('assets/Syn Cole - Feel Good.mp3');
-        this.bgMusic.volume = 0.05;
+        this.bgMusicBaseVolume = 1;
         this.musicStarted = false;
 
         // Sound effects
         this.startSound = new Audio('assets/shoot.wav');
-        this.startSound.volume = 0.5;
+        this.startSoundBaseVolume = 0.5;
 
         this.beepSound = new Audio('assets/beep.wav');
-        this.beepSound.volume = 0.1;
+        this.beepSoundBaseVolume = 0.1;
 
         this.rechargeSound = new Audio('assets/recharge.wav');
-        this.rechargeSound.volume = 0.1;
+        this.rechargeSoundBaseVolume = 0.1;
         this.rechargeSound.preservesPitch = false;
 
         this.tapSound = new Audio('assets/ball-tap.wav');
-        this.tapSound.volume = 0.1;
+        this.tapSoundBaseVolume = 0.1;
 
         this.bounceSound = new Audio('assets/tac.wav');
-        this.bounceSound.volume = 0.5;
+        this.bounceSoundBaseVolume = 0.5;
 
         this.tapOn = false;
         this.muted = false;
+
+        this.applyVolumeSettings();
+    }
+
+    clampVolume(volume) {
+        return Math.max(0, Math.min(1, Number(volume)));
+    }
+
+    applyVolumeSettings() {
+        this.bgMusic.volume = this.bgMusicBaseVolume * this.musicVolume;
+        this.startSound.volume = this.startSoundBaseVolume * this.sfxVolume;
+        this.beepSound.volume = this.beepSoundBaseVolume * this.sfxVolume;
+        this.rechargeSound.volume = this.rechargeSoundBaseVolume * this.sfxVolume;
+        this.tapSound.volume = this.tapSoundBaseVolume * this.sfxVolume;
+        this.bounceSound.volume = this.bounceSoundBaseVolume * this.sfxVolume;
+    }
+
+    setMusicVolume(volume) {
+        this.musicVolume = this.clampVolume(volume);
+        this.applyVolumeSettings();
+    }
+
+    setSfxVolume(volume) {
+        this.sfxVolume = this.clampVolume(volume);
+        this.applyVolumeSettings();
+    }
+
+    getMusicVolume() {
+        return this.musicVolume;
+    }
+
+    getSfxVolume() {
+        return this.sfxVolume;
     }
 
     setMuted(muted) {
@@ -34,13 +70,13 @@ class AudioManager {
             this.beepSound.pause();
             this.rechargeSound.pause();
             this.tapSound.pause();
-        } else if (this.musicStarted) {
+        } else if (this.musicStarted && this.musicVolume > 0) {
             this.bgMusic.play().catch(e => console.log("Audio play failed:", e));
         }
     }
 
     startMusic() {
-        if (!this.musicStarted && !this.muted) {
+        if (!this.musicStarted && !this.muted && this.musicVolume > 0) {
             this.bgMusic.play().catch(e => console.log("Audio play failed:", e));
             this.bgMusic.loop = false;
             this.bgMusic.onended = () => {

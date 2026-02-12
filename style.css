@@ -152,6 +152,60 @@ body {
     font-weight: bold;
 }
 
+/* Volume Panel */
+#volume-panel {
+    position: absolute;
+    top: 88px;
+    right: 15px;
+    width: 260px;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: white;
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+    z-index: 150;
+}
+
+#volume-panel.hidden {
+    display: none;
+}
+
+#volume-panel h3 {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #ffd700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.volume-row {
+    display: grid;
+    grid-template-columns: 78px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.volume-row:last-child {
+    margin-bottom: 0;
+}
+
+.volume-row label {
+    font-size: 13px;
+}
+
+.volume-row input[type="range"] {
+    width: 100%;
+}
+
+.volume-row span {
+    font-size: 12px;
+    text-align: right;
+    color: #ddd;
+}
+
 /* Help Overlay */
 #help-overlay {
     position: absolute;
