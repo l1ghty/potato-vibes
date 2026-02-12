@@ -98,8 +98,11 @@ class UI {
     setupSoundButton() {
         this.soundBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.toggleSound();
-            this.showVolumePanel();
+            if (this.volumePanel.classList.contains('hidden')) {
+                this.showVolumePanel();
+            } else {
+                this.hideVolumePanel();
+            }
         });
 
         this.volumePanel.addEventListener('click', (e) => {
