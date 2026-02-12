@@ -25,6 +25,7 @@ class Game {
         this.scoring = new Scoring();
         this.audio = new AudioManager();
         this.ui = new UI(this.audio);
+        this.ui.setRestartHandler(() => this.restartGame());
         this.input = new InputHandler(this.canvas, this);
         this.camera = new CameraManager();
         this.minimap = new MinimapRenderer(this.canvas);
@@ -121,6 +122,13 @@ class Game {
             this.reset();
             this.startPowerSelect();
         }
+    }
+
+    restartGame() {
+        this.potato.gliding = false;
+        this.audio.stopTap();
+        this.reset();
+        this.startPowerSelect();
     }
 
     startPowerSelect() {

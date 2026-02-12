@@ -97,7 +97,8 @@ body {
 /* Top-right UI Buttons */
 #fullscreen-btn,
 #sound-btn,
-#help-btn {
+#help-btn,
+#restart-btn {
     position: absolute;
     top: 20px;
     background: rgba(0, 0, 0, 0.6);
@@ -125,7 +126,8 @@ body {
 
 #fullscreen-btn:hover,
 #sound-btn:hover,
-#help-btn:hover {
+#help-btn:hover,
+#restart-btn:hover {
     background: rgba(0, 0, 0, 0.8);
     border-color: rgba(255, 255, 255, 0.6);
     transform: scale(1.1);
@@ -133,7 +135,8 @@ body {
 
 #fullscreen-btn:active,
 #sound-btn:active,
-#help-btn:active {
+#help-btn:active,
+#restart-btn:active {
     transform: scale(0.95);
 }
 
@@ -148,6 +151,12 @@ body {
 
 /* Help Button */
 #help-btn {
+    right: 210px;
+    font-weight: bold;
+}
+
+/* Restart Button */
+#restart-btn {
     right: 145px;
     font-weight: bold;
 }

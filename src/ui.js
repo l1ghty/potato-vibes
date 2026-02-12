@@ -8,6 +8,7 @@ class UI {
         this.fullscreenBtn = document.getElementById('fullscreen-btn');
         this.soundBtn = document.getElementById('sound-btn');
         this.helpBtn = document.getElementById('help-btn');
+        this.restartBtn = document.getElementById('restart-btn');
         this.helpOverlay = document.getElementById('help-overlay');
         this.volumePanel = document.getElementById('volume-panel');
         this.sfxVolumeSlider = document.getElementById('sfx-volume');
@@ -15,6 +16,7 @@ class UI {
         this.sfxVolumeValue = document.getElementById('sfx-volume-value');
         this.musicVolumeValue = document.getElementById('music-volume-value');
         this.audioManager = audioManager;
+        this.onRestart = null;
         this.soundMuted = false;
 
         // Setup buttons
@@ -23,6 +25,7 @@ class UI {
         this.setupVolumeControls();
         this.loadSoundSettings();
         this.setupHelpButton();
+        this.setupRestartButton();
 
         // Listen for fullscreen changes
         document.addEventListener('fullscreenchange', () => this.updateFullscreenButton());
@@ -234,6 +237,21 @@ class UI {
         this.helpOverlay.addEventListener('click', () => {
             this.hideHelp();
         });
+    }
+
+    setupRestartButton() {
+        this.restartBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.hideVolumePanel();
+            this.hideHelp();
+            if (typeof this.onRestart === 'function') {
+                this.onRestart();
+            }
+        });
+    }
+
+    setRestartHandler(handler) {
+        this.onRestart = handler;
     }
 
     showHelp() {
