@@ -6,7 +6,7 @@ class AudioManager {
 
         // Background music
         this.bgMusic = new Audio('assets/Syn Cole - Feel Good.mp3');
-        this.bgMusicBaseVolume = 1;
+        this.bgMusicBaseVolume = 0.1;
         this.musicStarted = false;
 
         // Sound effects
@@ -37,12 +37,17 @@ class AudioManager {
     }
 
     applyVolumeSettings() {
-        this.bgMusic.volume = this.bgMusicBaseVolume * this.musicVolume;
+        this.bgMusic.volume = this.bgMusicBaseVolume * this.getMusicGain();
         this.startSound.volume = this.startSoundBaseVolume * this.sfxVolume;
         this.beepSound.volume = this.beepSoundBaseVolume * this.sfxVolume;
         this.rechargeSound.volume = this.rechargeSoundBaseVolume * this.sfxVolume;
         this.tapSound.volume = this.tapSoundBaseVolume * this.sfxVolume;
         this.bounceSound.volume = this.bounceSoundBaseVolume * this.sfxVolume;
+    }
+
+    getMusicGain() {
+        // Use a perceptual curve so low slider values are easier to control.
+        return Math.sqrt(this.musicVolume);
     }
 
     setMusicVolume(volume) {
