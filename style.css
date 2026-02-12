@@ -94,17 +94,24 @@ body {
     display: none;
 }
 
-/* Fullscreen Button */
-#fullscreen-btn {
+/* Top-right UI Buttons */
+#fullscreen-btn,
+#sound-btn,
+#help-btn {
     position: absolute;
     top: 20px;
-    right: 15px;
     background: rgba(0, 0, 0, 0.6);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    padding: 10px 20px;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     font-size: 24px;
+    line-height: 1;
     cursor: pointer;
     pointer-events: auto;
     backdrop-filter: blur(10px);
@@ -112,42 +119,27 @@ body {
     z-index: 100;
 }
 
-#fullscreen-btn:hover {
+#fullscreen-btn {
+    right: 15px;
+}
+
+#fullscreen-btn:hover,
+#sound-btn:hover,
+#help-btn:hover {
     background: rgba(0, 0, 0, 0.8);
     border-color: rgba(255, 255, 255, 0.6);
     transform: scale(1.1);
 }
 
-#fullscreen-btn:active {
+#fullscreen-btn:active,
+#sound-btn:active,
+#help-btn:active {
     transform: scale(0.95);
 }
 
 /* Sound Toggle Button */
 #sound-btn {
-    position: absolute;
-    top: 20px;
     right: 80px;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    padding: 11px 12px;
-    font-size: 24px;
-    cursor: pointer;
-    pointer-events: auto;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-}
-
-#sound-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: scale(1.1);
-}
-
-#sound-btn:active {
-    transform: scale(0.95);
 }
 
 #sound-btn.muted {
@@ -156,31 +148,8 @@ body {
 
 /* Help Button */
 #help-btn {
-    position: absolute;
-    top: 20px;
     right: 145px;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 25px;
     font-weight: bold;
-    cursor: pointer;
-    pointer-events: auto;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-}
-
-#help-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: scale(1.1);
-}
-
-#help-btn:active {
-    transform: scale(0.95);
 }
 
 /* Help Overlay */
