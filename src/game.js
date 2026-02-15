@@ -110,10 +110,10 @@ class Game {
 
         // Only beep if we are in an interactive state for clicking
         if (['READY', 'POWER_SELECT', 'ANGLE_SELECT'].includes(this.state)) {
-            this.audio.beep();
+            this.audio.playSound('beepSound');
         }
         if (this.state === 'SWINGING') {
-            this.audio.start();
+            this.audio.playSound('startSound');
         }
     }
 
@@ -282,7 +282,7 @@ class Game {
         }
 
         if (this.potato.y >= this.groundY && this.state === 'FLYING') {
-            this.audio.bounce();
+            this.audio.playSound('bounceSound');
         }
 
         this.powerBar.update(deltaTime); // Always update powerBar for fade

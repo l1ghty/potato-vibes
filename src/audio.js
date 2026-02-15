@@ -97,18 +97,6 @@ class AudioManager {
         }
     }
 
-    start() {
-        this.playSound('startSound');
-    }
-
-    beep() {
-        this.playSound('beepSound');
-    }
-
-    bounce() {
-        this.playSound('bounceSound');
-    }
-
     recharge(speed = 1000) {
         if (this.muted) return;
 
