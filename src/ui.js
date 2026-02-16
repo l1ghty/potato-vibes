@@ -9,6 +9,7 @@ class UI {
         this.soundBtn = document.getElementById('sound-btn');
         this.helpBtn = document.getElementById('help-btn');
         this.restartBtn = document.getElementById('restart-btn');
+        this.pauseBtn = document.getElementById('pause-btn');
         this.helpOverlay = document.getElementById('help-overlay');
         this.confirmOverlay = document.getElementById('confirm-overlay');
         this.confirmMessage = document.getElementById('confirm-message');
@@ -30,6 +31,7 @@ class UI {
         this.loadSoundSettings();
         this.setupHelpButton();
         this.setupRestartButton();
+        this.setupPauseButton();
 
         // Listen for fullscreen changes
         document.addEventListener('fullscreenchange', () => this.updateFullscreenButton());
@@ -256,6 +258,31 @@ class UI {
 
     setRestartHandler(handler) {
         this.onRestart = handler;
+    }
+
+    setupPauseButton() {
+        this.pauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.hideVolumePanel();
+            this.hideHelp();
+            if (typeof this.onPause === 'function') {
+                this.onPause();
+            }
+        });
+    }
+
+    setPauseHandler(handler) {
+        this.onPause = handler;
+    }
+
+    updatePauseButton(isPaused) {
+        if (isPaused) {
+            this.pauseBtn.textContent = '▶';
+            this.pauseBtn.title = 'Resume Game';
+        } else {
+            this.pauseBtn.textContent = '⏸';
+            this.pauseBtn.title = 'Pause Game';
+        }
     }
 
     showHelp() {

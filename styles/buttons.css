@@ -1,7 +1,8 @@
 #fullscreen-btn,
 #sound-btn,
 #help-btn,
-#restart-btn {
+#restart-btn,
+#pause-btn {
     position: absolute;
     top: 20px;
     background: rgba(0, 0, 0, 0.6);
@@ -30,7 +31,8 @@
 #fullscreen-btn:hover,
 #sound-btn:hover,
 #help-btn:hover,
-#restart-btn:hover {
+#restart-btn:hover,
+#pause-btn:hover {
     background: rgba(0, 0, 0, 0.8);
     border-color: rgba(255, 255, 255, 0.6);
     transform: scale(1.1);
@@ -39,7 +41,8 @@
 #fullscreen-btn:active,
 #sound-btn:active,
 #help-btn:active,
-#restart-btn:active {
+#restart-btn:active,
+#pause-btn:active {
     transform: scale(0.95);
 }
 
@@ -51,8 +54,12 @@
     opacity: 0.5;
 }
 
-#help-btn {
+#pause-btn {
     right: 210px;
+}
+
+#help-btn {
+    right: 275px;
     font-weight: bold;
 }
 

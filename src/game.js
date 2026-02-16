@@ -15,6 +15,7 @@ class Game {
 
         // Game state
         this.state = 'READY'; // READY, POWER_SELECT, ANGLE_SELECT, SWINGING, FLYING, LANDED
+        this.paused = false;
 
         // Initialize systems
         this.parallax = new ParallaxBackground(this.canvas);
@@ -26,6 +27,7 @@ class Game {
         this.audio = new AudioManager();
         this.ui = new UI(this.audio);
         this.ui.setRestartHandler(() => this.restartGame());
+        this.ui.setPauseHandler(() => this.togglePause());
         this.input = new InputHandler(this.canvas, this);
         this.camera = new CameraManager();
         this.minimap = new MinimapRenderer(this.canvas);
@@ -143,6 +145,17 @@ class Game {
         this.startPowerSelect();
     }
 
+    togglePause() {
+        this.paused = !this.paused;
+        this.ui.updatePauseButton(this.paused);
+        
+        if (this.paused) {
+            this.audio.setMuted(true);
+        } else {
+            this.audio.setMuted(false);
+        }
+    }
+
     startPowerSelect() {
         this.audio.startMusic();
 
@@ -183,6 +196,11 @@ class Game {
         if (window.innerHeight > window.innerWidth) {
             //leave fullscreen
             document.exitFullscreen();
+            return;
+        }
+
+        // Skip updates if paused
+        if (this.paused) {
             return;
         }
 
@@ -373,6 +391,20 @@ class Game {
 
         // Render minimap
         this.minimap.render(this.ctx, this.camera.getX(), this.potato.x, this.jumpPadManager);
+
+        // Render paused overlay
+        if (this.paused) {
+            this.ctx.save();
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = 'white';
+            this.ctx.font = 'bold 48px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('PAUSED', this.canvas.width / 2, this.canvas.height / 2);
+            this.ctx.font = '24px Arial';
+            this.ctx.fillText('Click ▶ to resume', this.canvas.width / 2, this.canvas.height / 2 + 40);
+            this.ctx.restore();
+        }
     }
 
     resizeCanvas() {
