@@ -1,6 +1,6 @@
 # Potato Vibes (agentic engineering test project)
 
-A fun golf game where you launch a potato as far as possible!
+A game where you launch a potato as far as possible!
 
 [Play online](https://l1ghty.github.io/potato-vibes/)
 
