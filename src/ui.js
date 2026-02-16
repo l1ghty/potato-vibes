@@ -10,6 +10,10 @@ class UI {
         this.helpBtn = document.getElementById('help-btn');
         this.restartBtn = document.getElementById('restart-btn');
         this.helpOverlay = document.getElementById('help-overlay');
+        this.confirmOverlay = document.getElementById('confirm-overlay');
+        this.confirmMessage = document.getElementById('confirm-message');
+        this.confirmYes = document.getElementById('confirm-yes');
+        this.confirmNo = document.getElementById('confirm-no');
         this.volumePanel = document.getElementById('volume-panel');
         this.sfxVolumeSlider = document.getElementById('sfx-volume');
         this.musicVolumeSlider = document.getElementById('music-volume');
@@ -260,6 +264,32 @@ class UI {
 
     hideHelp() {
         this.helpOverlay.classList.add('hidden');
+    }
+
+    showConfirm(message) {
+        return new Promise((resolve) => {
+            this.confirmMessage.textContent = message;
+            this.confirmOverlay.classList.remove('hidden');
+
+            const handleYes = () => {
+                cleanup();
+                resolve(true);
+            };
+
+            const handleNo = () => {
+                cleanup();
+                resolve(false);
+            };
+
+            const cleanup = () => {
+                this.confirmYes.removeEventListener('click', handleYes);
+                this.confirmNo.removeEventListener('click', handleNo);
+                this.confirmOverlay.classList.add('hidden');
+            };
+
+            this.confirmYes.addEventListener('click', handleYes);
+            this.confirmNo.addEventListener('click', handleNo);
+        });
     }
 
     updateDistance(distance) {

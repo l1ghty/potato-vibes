@@ -120,7 +120,19 @@ class Game {
     handleMessageClick() {
         if (this.state === 'READY' || this.state === 'LANDED') {
             this.reset();
-            this.startPowerSelect();
+            this.handleFullscreenPrompt().then(() => {
+                this.startPowerSelect();
+            });
+        }
+    }
+
+    async handleFullscreenPrompt() {
+        if (!this.fullscreenRequested) {
+            const wantsFullscreen = await this.ui.showConfirm('Enable fullscreen?');
+            if (wantsFullscreen) {
+                this.ui.requestFullscreen();
+            }
+            this.fullscreenRequested = true;
         }
     }
 
@@ -133,12 +145,6 @@ class Game {
 
     startPowerSelect() {
         this.audio.startMusic();
-
-        // Request fullscreen on first interaction
-        if (!this.fullscreenRequested) {
-            this.ui.requestFullscreen();
-            this.fullscreenRequested = true;
-        }
 
         this.state = 'POWER_SELECT';
         this.powerBar.start();
@@ -237,13 +243,6 @@ class Game {
                     this.state = 'LANDED';
                     this.showResults();
                 }
-            }
-
-            // If swing finished and potato not hit, always launch potato
-            if (!this.physics.isSwinging() && !this.physics.isPotatoFlying() && this.state === 'SWINGING') {
-                // Force hit
-                this.physics.hitPotato();
-                this.state = 'FLYING';
             }
         }
 
