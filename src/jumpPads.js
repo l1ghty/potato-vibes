@@ -19,6 +19,12 @@ class JumpPadManager {
 
     checkCollision(potato, physics) {
         for (const pad of this.jumpPads) {
+            // If pad is far behind player, move it to the front of the line.
+            // This infinitely extends the level past 10000 score while keeping relative distances exactly the same.
+            while (pad.x < potato.x - 3000) {
+                pad.x += this.jumpPads.length * this.jumpPadIntervalPx;
+            }
+
             // Potato bounding box
             const potatoWidth = 40;
             const potatoHeight = 40;
