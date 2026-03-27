@@ -148,7 +148,7 @@ class Game {
     togglePause() {
         this.paused = !this.paused;
         this.ui.updatePauseButton(this.paused);
-        
+
         if (this.paused) {
             this.audio.setMuted(true);
         } else {
@@ -187,6 +187,7 @@ class Game {
         this.physics.reset();
         this.scoring.reset();
         this.camera.reset();
+        this.jumpPadManager.reset();
         this.ui.hideMessage();
         this.ui.updateDistance(0);
     }

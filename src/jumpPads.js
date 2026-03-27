@@ -1,18 +1,25 @@
 // Jump pad management and collision detection
 class JumpPadManager {
     constructor(potatoStartX, groundY) {
+        this.potatoStartX = potatoStartX;
+        this.groundY = groundY;
         this.jumpPadIntervalPx = 100 * 20; // 100m * 20 pixels/m = 2000px
         this.jumpPads = [];
+        this.powerBarWidth = 300;
+        this.powerBarHeight = 40;
 
+        this.reset();
+    }
+
+    reset() {
+        this.jumpPads = [];
         // Place jump-pads for the course
-        const powerBarWidth = 300;
-        const powerBarHeight = 40;
         for (let i = 1; i <= 100; i++) {
             this.jumpPads.push({
-                x: potatoStartX + i * this.jumpPadIntervalPx,
-                y: groundY - powerBarHeight, // Pad bottom aligns with ground
-                width: powerBarWidth,
-                height: powerBarHeight
+                x: this.potatoStartX + i * this.jumpPadIntervalPx,
+                y: this.groundY - this.powerBarHeight, // Pad bottom aligns with ground
+                width: this.powerBarWidth,
+                height: this.powerBarHeight
             });
         }
     }
